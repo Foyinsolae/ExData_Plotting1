@@ -1,16 +1,12 @@
-power <- read.table("household_power_consumption.txt",skip=1,sep=";")
-names(power) <- c("Date","Time","Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3")
-subpower <- subset(power,power$Date=="1/2/2007" | power$Date =="2/2/2007")
+housedata <-read.table("household_power_consumption.txt", header=TRUE, sep=";", na.strings = "?")
+house_a_data <-rbind(housedata[housedata$Date=="1/2/2007",],housedata[housedata$Date=="2/2/2007",])
+#Transform date to Date format and create new variable with Date and Time joined
 
-subpower$Date <- as.Date(subpower$Date, format="%d/%m/%Y")
-subpower$Time <- strptime(subpower$Time, format="%H:%M:%S")
-subpower[1:1440,"Time"] <- format(subpower[1:1440,"Time"],"2007-02-01 %H:%M:%S")
-subpower[1441:2880,"Time"] <- format(subpower[1441:2880,"Time"],"2007-02-02 %H:%M:%S")
+house_a_data$Date <- as.Date(house_a_data$Date,"%d/%m/%Y")
+house_a_data<-cbind(house_a_data, "DateTime" = as.POSIXct(paste(house_a_data$Date, house_a_data$Time)))
 
-plot(subpower$Time,subpower$Sub_metering_1,type="n",xlab="",ylab="Energy sub metering")
-with(subpower,lines(Time,as.numeric(as.character(Sub_metering_1))))
-with(subpower,lines(Time,as.numeric(as.character(Sub_metering_2)),col="red"))
-with(subpower,lines(Time,as.numeric(as.character(Sub_metering_3)),col="blue"))
-legend("topright", lty=1, col=c("black","red","blue"),legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+with(house_a_data, {plot(Sub_metering_1 ~ DateTime, type="l", xlab= "", ylab="Energy Sub Metering")})
 
-title(main="Energy sub-metering")
+lines(house_a_data$Sub_metering_2 ~ house_a_data$DateTime, col = 'Red')
+lines(house_a_data$Sub_metering_3 ~ house_a_data$DateTime, col = 'Blue')
+legend("topright", lty=1, lwd =3, col=c("black","red","blue") ,legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))

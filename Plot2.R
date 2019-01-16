@@ -1,9 +1,9 @@
-subpower$Date <- as.Date(subpower$Date, format="%d/%m/%Y")
-subpower$Time <- strptime(subpower$Time, format="%H:%M:%S")
-subpower[1:1440,"Time"] <- format(subpower[1:1440,"Time"],"2007-02-01 %H:%M:%S")
-subpower[1441:2880,"Time"] <- format(subpower[1441:2880,"Time"],"2007-02-02 %H:%M:%S")
+housedata <-read.table("household_power_consumption.txt", header=TRUE, sep=";", na.strings = "?")
+house_a_data <-rbind(housedata[housedata$Date=="1/2/2007",],housedata[housedata$Date=="2/2/2007",])
+#Transform date to Date format and create new variable with Date and Time joined
 
-plot(subpower$Time,as.numeric(as.character(subpower$Global_active_power)),type="l",xlab="",ylab="Global Active Power (kilowatts)")
-title(main = "Voltage")
+house_a_data$Date <- as.Date(house_a_data$Date,"%d/%m/%Y")
+house_a_data<-cbind(house_a_data, "DateTime" = as.POSIXct(paste(house_a_data$Date, house_a_data$Time)))
 
- 
+plot(house_a_data$Global_active_power ~ house_a_data$DateTime, type="l", main = "Voltage", xlab = "", 
+     ylab="Global Active power (kilowatts)")
